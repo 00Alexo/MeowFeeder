@@ -4,17 +4,40 @@ import MeowInput from '../components/MeowInput';
 import MeowFeeder from '../assets/signupcat.png'
 import Google from '../assets/google.png';
 import Apple from '../assets/apple.png';
+import { useSignup } from "../hooks/useSignUp";
+import { useAuthContext } from '../hooks/useAuthContext.js';
+import NotFound from '../components/NotFound.js';
 
 const SignUp = () => {
+    const { user, isAuthReady } = useAuthContext();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const {signup, error, isLoading, errorFields} = useSignup();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Form submitted:', username, email, password, confirmPassword);
+    const getFieldError = (fieldName) => {
+        if (!errorFields) return null;
+        const errorField = errorFields.find(err => err.field === fieldName);
+        return errorField ? errorField.error : null;
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await signup(username, email, password, confirmPassword);
+    }
+
+    if (!isAuthReady) {
+        return (
+            <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-[#EDF8FD]">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#5F5FDF]"></div>
+            </div>
+        );
+    }
+
+    if (user) {
+        return <NotFound />;
+    }
 
     return (
         <div className="min-h-screen flex">
@@ -38,11 +61,11 @@ const SignUp = () => {
                                 label="Your name"
                                 name="fullName"
                                 type="text"
-                                placeholder="Enter your full name"
+                                placeholder="Enter your username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
-                                // error={errors.fullName}
+                                error={getFieldError("username")}
                             />
 
                             <MeowInput
@@ -53,7 +76,7 @@ const SignUp = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                // error={}
+                                error={getFieldError("email")}
                             />
 
                             <MeowInput
@@ -64,7 +87,7 @@ const SignUp = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                // error={errors.password}
+                                error={getFieldError("pass")}
                             />
 
                             <MeowInput
@@ -75,14 +98,24 @@ const SignUp = () => {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
-                                // error={errors.confirmPassword}
+                                error={getFieldError("cpass")}
                             />
                             <button
                                 type="submit"
-                                className="w-full bg-meow-pink hover:bg-meow-pink-hover text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all duration-200 transform hover:translate-y-[-1px] hover:shadow-lg text-sm sm:text-base"
+                                disabled={isLoading}
+                                className="w-full bg-meow-pink hover:bg-meow-pink-hover disabled:bg-meow-pink/50 disabled:cursor-not-allowed text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all duration-200 transform hover:translate-y-[-1px] hover:shadow-lg text-sm sm:text-base"
                             >
-                                Create Account
+                                {isLoading ? 'Creating Account...' : 'Create Account'}
                             </button>
+
+                            {error && !errorFields && (
+                                <div className="bg-red-50 border border-red-200 rounded-lg p-3 sm:p-4">
+                                    <p className="text-red-600 text-xs sm:text-sm flex items-center space-x-2">
+                                        <span>⚠️</span>
+                                        <span>{error}</span>
+                                    </p>
+                                </div>
+                            )}
                             <div className="relative">
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-border-light"></div>
