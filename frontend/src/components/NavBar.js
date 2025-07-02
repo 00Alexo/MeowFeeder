@@ -48,7 +48,7 @@ const NavBar = () => {
                                         {user.username?.charAt(0).toUpperCase()}
                                     </span>
                                 </div>
-                                <span>{user.username.toUpperCase()}</span>
+                                <span>{user.username}</span>
                                 <svg className={`w-4 h-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
@@ -60,14 +60,6 @@ const NavBar = () => {
                                         <div className="px-4 py-2 text-xs text-text-muted border-b border-border-light">
                                             Signed in as <strong>{user.username}</strong>
                                         </div>
-                                        <Link
-                                            to="/dashboard"
-                                            className="block px-4 py-2 text-sm text-text-secondary hover:bg-meow-pink hover:bg-opacity-10 hover:text-text-primary transition-colors duration-200"
-                                            onClick={() => setShowDropdown(false)}
-                                        >
-                                            Dashboard
-                                        </Link>
-                                        <div className="border-t border-border-light"></div>
                                         <button
                                             onClick={handleLogout}
                                             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"

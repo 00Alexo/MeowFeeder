@@ -10,7 +10,6 @@ import NotFound from '../components/NotFound.js';
 
 const SignUp = () => {
     const { user, isAuthReady } = useAuthContext();
-    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,7 +23,7 @@ const SignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await signup(username, email, password, confirmPassword);
+        await signup(email, password, confirmPassword);
     }
 
     if (!isAuthReady) {
@@ -57,17 +56,6 @@ const SignUp = () => {
                             </h2>
                         </div>
                         <form onSubmit={handleSubmit} className="w-full space-y-4 sm:space-y-6">
-                            <MeowInput
-                                label="Your name"
-                                name="fullName"
-                                type="text"
-                                placeholder="Enter your username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                                error={getFieldError("username")}
-                            />
-
                             <MeowInput
                                 label="Email address"
                                 name="email"
