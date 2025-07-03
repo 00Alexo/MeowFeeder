@@ -1,4 +1,15 @@
 {
+  "name": "meowfeeder-backend",
+  "version": "1.0.0",
+  "description": "Backend server for MeowFeeder system with WebSocket support",
+  "main": "websocket_server.js",
+  "scripts": {
+    "start": "node websocket_server.js",
+    "dev": "nodemon websocket_server.js"
+  },
+  "keywords": ["websocket", "esp32", "iot", "pet-feeder", "express"],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -6,6 +17,10 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.1",
-    "password-validator": "^5.3.0"
+    "password-validator": "^5.3.0",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
