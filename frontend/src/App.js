@@ -10,6 +10,7 @@ import Settings from './pages/Settings';
 import WelcomePage from './pages/WelcomePage';
 import ColorPalette from './pages/ColorPalette';
 import AddDevice from './pages/AddDevice';
+import MobileAppPage from './pages/MobileAppPage';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 <Settings/>
               </ProtectedRoute>
             }/>
+            <Route path = "/mobile-app" element={<MobileAppPage/>}/>
             <Route path = "/Welcome" element={<WelcomePage/>}/>
             <Route path = "/color-palette" element={<ColorPalette/>}/>
           </Routes>

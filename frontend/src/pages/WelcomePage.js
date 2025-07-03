@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { Parallax } from '@react-spring/parallax';
 import { Link, useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
@@ -6,11 +6,25 @@ import Features from '../components/Features';
 import HowItWorks from '../components/HowItWorks';
 import Background from '../components/Background';
 import Navigation from '../components/Navigation';
+import WelcomePageMobile from './WelcomePageMobile';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
   const parallaxRef = useRef(null);
-  
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // MeowFeeder color palette from tailwind config
   const colors = {
     primary: "#F4B6C2",      // meow-pink
@@ -118,6 +132,11 @@ const WelcomePage = () => {
       }
     }
   };
+
+  // If mobile, render mobile version
+  if (isMobile) {
+    return <WelcomePageMobile />;
+  }
 
   return (
     <div className="relative h-screen overflow-hidden">
