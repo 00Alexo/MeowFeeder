@@ -1,8 +1,18 @@
+import { useAuthContext } from "../hooks/useAuthContext";
+import Dashboard from "./Dashboard";
+import WelcomePage from "./WelcomePage";
+
 const Home = () => {
-    return (
-        <div>
-            Welcome to meowfeeder
-        </div>
+    const { user } = useAuthContext();
+
+    if(!user)
+        return(
+            <WelcomePage/>
+        )
+
+    if(user)
+        return (
+        <Dashboard/>
     );
 }
  

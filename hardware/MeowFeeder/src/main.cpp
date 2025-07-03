@@ -6,7 +6,7 @@
 #include <WiFi.h>
 #include <IRrecv.h>
 #include <IRremoteESP8266.h>
-#include <IRutils.h>
+#include <IRutils.h> 
 #include "secrets.h"
 
 // WiFi credentials from secrets.h
@@ -27,7 +27,7 @@ const uint16_t IR_RECV_PIN = 27;
 
 // Stepper motor settings
 const int stepsPerRevolution = 2048;
-const int feedSteps = 256; // 1/4 rotation for feeding
+const int feedSteps = 512; // 1/4 rotation for feeding
 
 // Step sequence for 28BYJ-48 (full-step mode)
 int stepSequence[4][4] = {
@@ -53,7 +53,7 @@ enum FeedState {
 
 FeedState feedState = IDLE;
 unsigned long waitStartTime = 0;
-const unsigned long WAIT_DURATION = 2000; // 2 seconds
+const unsigned long WAIT_DURATION = 100; // 2 seconds
 
 // IR receiver setup
 IRrecv irrecv(IR_RECV_PIN);
