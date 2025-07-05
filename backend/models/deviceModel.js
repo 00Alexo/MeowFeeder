@@ -23,6 +23,11 @@ const deviceSchema = new mongoose.Schema({
     feedingHistory:{
         type: [Date],
         default: []
+    },
+    ipAddress:{
+        type: String,
+        required: true,
+        default: process.env.DEFAULT_IP_ADDRESS
     }
 }, {timestamps: true});
 

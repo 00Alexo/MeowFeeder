@@ -164,7 +164,6 @@ const addFeedingToHistory = async (req, res) => {
         const feedingDate = new Date();
         
         device.feedingHistory.push(feedingDate);
-        
         device.lastFeedTime = feedingDate;
         
         await device.save();

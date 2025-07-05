@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { useDeviceControl } from '../hooks/useWebSocket';
 import { Link } from 'react-router-dom';
 import DeviceDetails from '../components/DeviceDetails';
 import FeedingConfig from '../components/FeedingConfig';
@@ -12,7 +13,20 @@ const Dashboard = () => {
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [showFeedingConfig, setShowFeedingConfig] = useState(false);
+    const [feedingDeviceId, setFeedingDeviceId] = useState(null);
     const modalRef = useRef(null);
+
+    const firstOnlineDevice = devices.find(d => d.status === 'online');
+    const deviceIp = firstOnlineDevice?.ipAddress;
+    const currentDeviceId = firstOnlineDevice?._id; // Get the current device ID
+    const { 
+        isConnected, 
+        deviceStatus, 
+        feedNow, 
+        connectionError, 
+        lastFeedResponse,
+        reconnect 
+    } = useDeviceControl(deviceIp, currentDeviceId);
 
     useEffect(() => {
         const fetchDevices = async () => {
@@ -37,6 +51,25 @@ const Dashboard = () => {
 
         fetchDevices();
     }, [user]);
+
+    useEffect(() => {
+        if (lastFeedResponse) {
+            console.log('Feed response received:', lastFeedResponse);
+            
+            if (lastFeedResponse.success) {
+                setTimeout(() => {
+                    setFeedingDeviceId(null);
+                    setDevices(prev => prev.map(d => 
+                        d.status === 'feeding' ? { ...d, status: 'online' } : d
+                    ));
+                }, 2000);
+            } else {
+                setFeedingDeviceId(null);
+                setError(`Feed failed: ${lastFeedResponse.message}`);
+                setTimeout(() => setError(''), 5000);
+            }
+        }
+    }, [lastFeedResponse]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -125,8 +158,79 @@ const Dashboard = () => {
         }
     };
 
-    const handleFeedNow = async (deviceId) => {
 
+
+    const handleFeedNow = async (deviceId) => {
+        try {
+            setFeedingDeviceId(deviceId);
+            
+            const device = devices.find(d => d._id === deviceId);
+            
+            if (!device) {
+                throw new Error('Device not found');
+            }
+            
+            if (device.status !== 'online') {
+                throw new Error('Device is offline');
+            }
+            
+            if (!device.ipAddress) {
+                throw new Error('Device IP address not configured. Please configure the device IP in settings.');
+            }
+            
+            if (!isConnected) {
+                throw new Error('Device not connected via WebSocket. Check device IP and network connection.');
+            }
+            
+            const actualDeviceId = device.deviceId || device._id;
+            if (!actualDeviceId) {
+                throw new Error('Device ID not found');
+            }
+            
+            const success = feedNow(actualDeviceId);
+            
+            if (!success) {
+                throw new Error('Failed to send feed command - WebSocket not connected');
+            }
+            
+            console.log(`Feed command sent successfully to device: ${actualDeviceId}`);
+            
+            setError('');
+            
+            // Record feeding in backend immediately when button is clicked
+            try {
+                await fetch(`${process.env.REACT_APP_API}/api/device/addFeedingToHistory`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deviceId })
+                });
+                console.log('Feeding recorded in backend for device:', deviceId);
+            } catch (error) {
+                console.error('Failed to record feeding in backend:', error);
+            }
+            
+            setDevices(prev => prev.map(d => 
+                d._id === deviceId 
+                    ? { ...d, status: 'feeding' }
+                    : d
+            ));
+            
+            setTimeout(() => {
+                setDevices(prev => prev.map(d => 
+                    d._id === deviceId 
+                        ? { ...d, status: 'online' }
+                        : d
+                ));
+                setFeedingDeviceId(null);
+            }, 15000);
+            
+        } catch (error) {
+            console.error('Error feeding device:', error);
+            setError(`Failed to feed device: ${error.message}`);
+            setFeedingDeviceId(null);
+            
+            setTimeout(() => setError(''), 5000);
+        }
     };
 
     if (isLoading) {
@@ -145,6 +249,50 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen bg-gray-50 pt-32 px-4">
             <div className="max-w-6xl mx-auto">
+                {/* Connection Status */}
+                {firstOnlineDevice && deviceIp ? (
+                    <div className={`mb-4 p-3 rounded-lg flex items-center justify-between ${
+                        isConnected ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                        <div className="flex items-center space-x-2">
+                            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                            <span className="text-sm font-medium">
+                                Device Connection: {isConnected ? 'Connected' : 'Connecting...'}
+                                {deviceStatus && ` (${deviceStatus.status})`}
+                            </span>
+                            {connectionError && (
+                                <span className="text-red-600 text-sm">- {connectionError}</span>
+                            )}
+                        </div>
+                        {!isConnected && (
+                            <button 
+                                onClick={reconnect}
+                                className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
+                            >
+                                Reconnect
+                            </button>
+                        )}
+                    </div>
+                ) : firstOnlineDevice && !deviceIp ? (
+                    <div className="mb-4 p-3 rounded-lg bg-blue-100 text-blue-800 flex items-center space-x-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm font-medium">
+                            Device IP address not configured. Real-time features disabled.
+                        </span>
+                    </div>
+                ) : (
+                    <div className="mb-4 p-3 rounded-lg bg-gray-100 text-gray-600 flex items-center space-x-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span className="text-sm font-medium">
+                            No online devices found. Add a device to get started.
+                        </span>
+                    </div>
+                )}
+                
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
                     <p className="text-gray-600">Welcome back, {user?.username}! Manage your MeowFeeder devices.</p>
@@ -231,14 +379,24 @@ const Dashboard = () => {
                                         </div>
                                         <button 
                                             onClick={() => handleFeedNow(device._id)}
-                                            disabled={device.status !== 'online'}
+                                            disabled={device.status !== 'online' || feedingDeviceId === device._id}
                                             className={`w-full py-2 px-3 rounded-lg transition-all duration-200 text-sm font-medium ${
-                                                device.status === 'online' 
-                                                    ? 'bg-green-600 text-white hover:bg-green-700' 
-                                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                feedingDeviceId === device._id
+                                                    ? 'bg-orange-500 text-white cursor-not-allowed'
+                                                    : device.status === 'online' 
+                                                        ? 'bg-green-600 text-white hover:bg-green-700' 
+                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                             }`}
                                         >
-                                            {device.status === 'online' ? '🐾 Feed Now' : 'Device Offline'}
+                                            {feedingDeviceId === device._id ? (
+                                                <span className="flex items-center justify-center">
+                                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    Feeding...
+                                                </span>
+                                            ) : device.status === 'online' ? '🐾 Feed Now' : 'Device Offline'}
                                         </button>
                                     </div>
                                 </div>
