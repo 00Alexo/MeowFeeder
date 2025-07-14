@@ -7,7 +7,12 @@ const {
     getUserDevicesWithDetails,
     modifyFeedingTime,
     addFeedingToHistory,
-    getFeedingHistory
+    getFeedingHistory,
+    getDeviceSchedules,
+    updateSchedule,
+    updateAutoFeeding,
+    addSchedule,
+    deleteSchedule
 } = require('../controllers/deviceController');
 
 const router = express.Router();
@@ -24,5 +29,12 @@ router.get('/getUserDevicesWithDetails/:userEmail', getUserDevicesWithDetails);
 router.post('/modifyFeedingTime', modifyFeedingTime);
 router.post('/addFeedingToHistory', addFeedingToHistory);
 router.get('/getFeedingHistory/:deviceId', getFeedingHistory);
+
+// mobile routes
+router.get('/schedules/:deviceId', getDeviceSchedules);
+router.put('/schedules/:scheduleId', updateSchedule);
+router.put('/:deviceId/auto-feeding', updateAutoFeeding);
+router.post('/:deviceId/addSchedule', addSchedule);
+router.delete('/:deviceId/deleteSchedule', deleteSchedule);
 
 module.exports = router;

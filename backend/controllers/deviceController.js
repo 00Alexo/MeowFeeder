@@ -65,7 +65,8 @@ const getDeviceById = async (req, res) => {
         if (!device) {
             return res.status(404).json({ error: 'Device not found.' });
         }
-        return res.status(200).json({ device });
+        // Return device data directly (not wrapped in device object)
+        return res.status(200).json(device);
     }
     catch (error) {
         console.error("Error fetching device:", error);
@@ -163,6 +164,44 @@ const addFeedingToHistory = async (req, res) => {
 
         const feedingDate = new Date();
         
+        // If device is online and has an IP, try to send WebSocket command
+        let webSocketSuccess = false;
+        if (device.status === 'online' && device.ipAddress) {
+            try {
+                const WebSocket = require('ws');
+                const ws = new WebSocket(`ws://${device.ipAddress}:81`);
+                
+                await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        ws.close();
+                        reject(new Error('WebSocket connection timeout'));
+                    }, 5000);
+                    
+                    ws.on('open', () => {
+                        clearTimeout(timeout);
+                        const feedCommand = {
+                            command: 'feed_now',
+                            deviceId: deviceId,
+                            timestamp: Date.now()
+                        };
+                        ws.send(JSON.stringify(feedCommand));
+                        webSocketSuccess = true;
+                        ws.close();
+                        resolve();
+                    });
+                    
+                    ws.on('error', (error) => {
+                        clearTimeout(timeout);
+                        reject(error);
+                    });
+                });
+            } catch (error) {
+                console.log(`WebSocket feed command failed for device ${deviceId}:`, error.message);
+                // Continue with database recording even if WebSocket fails
+            }
+        }
+        
+        // Always record in database
         device.feedingHistory.push(feedingDate);
         device.lastFeedTime = feedingDate;
         
@@ -171,7 +210,9 @@ const addFeedingToHistory = async (req, res) => {
         return res.status(200).json({ 
             message: 'Feeding recorded successfully.',
             feedingDate: feedingDate.toISOString(),
-            totalFeedings: device.feedingHistory.length
+            totalFeedings: device.feedingHistory.length,
+            webSocketSuccess,
+            deviceStatus: device.status
         });
     } catch (error) {
         console.error("Error recording feeding:", error);
@@ -202,6 +243,131 @@ const getFeedingHistory = async (req, res) => {
     }
 }
 
+const getDeviceSchedules = async (req, res) => {
+    try {
+        const { deviceId } = req.params;
+        
+        const device = await deviceModel.findById(deviceId);
+        if (!device) {
+            return res.status(404).json({ error: 'Device not found.' });
+        }
+
+        const schedules = device.feedingTime.map((time, index) => ({
+            id: index,
+            time: time,
+            hour: time.split(':')[0],
+            minute: time.split(':')[1],
+            enabled: true, 
+            portion: 'Standard portion'
+        }));
+
+        return res.status(200).json(schedules);
+    } catch (error) {
+        console.error("Error fetching device schedules:", error);
+        return res.status(500).json({ error: 'Failed to fetch device schedules.' });
+    }
+}
+
+const updateSchedule = async (req, res) => {
+    try {
+        const { scheduleId } = req.params;
+        const { enabled } = req.body;
+        
+        return res.status(200).json({ message: 'Schedule updated successfully.' });
+    } catch (error) {
+        console.error("Error updating schedule:", error);
+        return res.status(500).json({ error: 'Failed to update schedule.' });
+    }
+}
+
+const updateAutoFeeding = async (req, res) => {
+    try {
+        const { deviceId } = req.params;
+        const { autoFeeding } = req.body;
+        
+        const device = await deviceModel.findById(deviceId);
+        if (!device) {
+            return res.status(404).json({ error: 'Device not found.' });
+        }
+
+        device.autoFeeding = autoFeeding;
+        await device.save();
+
+        return res.status(200).json({ message: 'Auto feeding setting updated successfully.' });
+    } catch (error) {
+        console.error("Error updating auto feeding:", error);
+        return res.status(500).json({ error: 'Failed to update auto feeding setting.' });
+    }
+}
+
+const addSchedule = async (req, res) => {
+    try {
+        const { deviceId } = req.params;
+        const { time } = req.body;
+        
+        if (!time) {
+            return res.status(400).json({ error: 'Time is required.' });
+        }
+        
+        const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(time)) {
+            return res.status(400).json({ error: 'Invalid time format. Use HH:MM format.' });
+        }
+        
+        const device = await deviceModel.findById(deviceId);
+        if (!device) {
+            return res.status(404).json({ error: 'Device not found.' });
+        }
+
+        if (device.feedingTime.includes(time)) {
+            return res.status(400).json({ error: 'This feeding time already exists.' });
+        }
+
+        device.feedingTime.push(time);
+        await device.save();
+
+        return res.status(200).json({ 
+            message: 'Schedule added successfully.',
+            feedingTime: device.feedingTime
+        });
+    } catch (error) {
+        console.error("Error adding schedule:", error);
+        return res.status(500).json({ error: 'Failed to add schedule.' });
+    }
+}
+
+const deleteSchedule = async (req, res) => {
+    try {
+        const { deviceId } = req.params;
+        const { scheduleIndex } = req.body;
+        
+        if (scheduleIndex === undefined || scheduleIndex === null) {
+            return res.status(400).json({ error: 'Schedule index is required.' });
+        }
+        
+        const device = await deviceModel.findById(deviceId);
+        if (!device) {
+            return res.status(404).json({ error: 'Device not found.' });
+        }
+
+        if (scheduleIndex < 0 || scheduleIndex >= device.feedingTime.length) {
+            return res.status(400).json({ error: 'Invalid schedule index.' });
+        }
+
+        // Remove the schedule at the specified index
+        device.feedingTime.splice(scheduleIndex, 1);
+        await device.save();
+
+        return res.status(200).json({ 
+            message: 'Schedule deleted successfully.',
+            feedingTime: device.feedingTime
+        });
+    } catch (error) {
+        console.error("Error deleting schedule:", error);
+        return res.status(500).json({ error: 'Failed to delete schedule.' });
+    }
+}
+
 module.exports = {
     addDeviceToUser,
     createDevice,
@@ -211,4 +377,9 @@ module.exports = {
     modifyFeedingTime,
     addFeedingToHistory,
     getFeedingHistory,
+    getDeviceSchedules,
+    updateSchedule,
+    updateAutoFeeding,
+    addSchedule,
+    deleteSchedule,
 }

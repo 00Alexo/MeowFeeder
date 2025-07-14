@@ -6,18 +6,29 @@ const app = express();
 const userRoutes = require('./routes/userRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 
-const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:3000';
+const allowedOrigins = [
+    process.env.ALLOWED_ORIGIN || 'http://localhost:3000',
+    ...(process.env.MOBILE_DEV_ORIGINS || '').split(',').filter(Boolean)
+];
 
 const corsOptions = {
-    origin: allowedOrigin,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'username'],
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: (process.env.CORS_METHODS || 'GET,POST,PUT,DELETE').split(','),
+    allowedHeaders: (process.env.CORS_HEADERS || 'Content-Type,Authorization,username').split(','),
     credentials: true
 };
 
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '50mb' })); 
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: process.env.REQUEST_SIZE_LIMIT || '50mb' })); 
+app.use(express.urlencoded({ limit: process.env.REQUEST_SIZE_LIMIT || '50mb', extended: true }));
 app.use((req, res, next) =>{
     console.log(req.path, req.method)
     if (req.url === '/' && req.method === 'GET') {

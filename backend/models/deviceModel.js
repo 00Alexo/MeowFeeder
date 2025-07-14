@@ -27,7 +27,15 @@ const deviceSchema = new mongoose.Schema({
     ipAddress:{
         type: String,
         required: true,
-        default: process.env.DEFAULT_IP_ADDRESS
+        default: process.env.DEFAULT_IP_ADRESS || '192.168.100.43'
+    },
+    autoFeeding:{
+        type: Boolean,
+        default: true
+    },
+    name:{
+        type: String,
+        default: 'MeowFeeder'
     }
 }, {timestamps: true});
 
