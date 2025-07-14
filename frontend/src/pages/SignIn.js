@@ -74,7 +74,7 @@ const SignIn = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                error={getFieldError("password")}
+                                error={getFieldError("pass")}
                             />
 
                             <div className="flex items-center justify-between">

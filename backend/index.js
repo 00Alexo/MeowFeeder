@@ -30,7 +30,7 @@ const corsOptions = {
     origin: allowedOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'username'],
-   credentials: true
+    credentials: true
 };
 app.use(cors(corsOptions));
 app.use(express.json({ limit: process.env.REQUEST_SIZE_LIMIT || '50mb' })); 
