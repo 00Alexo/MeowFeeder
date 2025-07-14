@@ -2,7 +2,7 @@
   "expo": {
     "scheme": "MeowFeeder",
     "name": "MeowFeeder",
-    "slug": "MeowFeeder",
+    "slug": "meowfeeder",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo-light.png",
@@ -21,13 +21,21 @@
         "foregroundImage": "./assets/logo-light.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.alexo01.meowfeeder"
     },
     "web": {
       "favicon": "./assets/logo-light.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e4fc4612-ac37-4fb4-952a-33b1a9778fe9"
+      }
+    },
+    "owner": "alexo01"
   }
 }
