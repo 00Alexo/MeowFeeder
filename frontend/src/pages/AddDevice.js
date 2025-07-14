@@ -19,9 +19,10 @@ const AddDevice = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
                 },
                 body: JSON.stringify({
-                    userEmail: user.username, // username is actually the email
+                    userEmail: user.username,
                     deviceId: deviceId
                 })
             });

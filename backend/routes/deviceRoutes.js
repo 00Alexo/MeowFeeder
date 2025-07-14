@@ -12,6 +12,10 @@ const {
 
 const router = express.Router();
 
+const verifyAuth = require('../middleware/verifyAuth');
+
+router.use(verifyAuth);
+
 router.post('/createDevice', createDevice);
 router.post('/addDeviceToUser', addDeviceToUser);
 router.get('/getDeviceById/:deviceId', getDeviceById);

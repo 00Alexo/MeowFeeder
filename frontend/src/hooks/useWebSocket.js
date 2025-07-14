@@ -162,9 +162,14 @@ export const useDeviceControl = (deviceIp, deviceId) => {
       console.log('Recording feeding in backend for device:', deviceId);
       console.log('API URL:', `${process.env.REACT_APP_API}/api/device/addFeedingToHistory`);
       
+      const user = JSON.parse(localStorage.getItem('user'));
+      
       const response = await fetch(`${process.env.REACT_APP_API}/api/device/addFeedingToHistory`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token}`
+        },
         body: JSON.stringify({ deviceId })
       });
 

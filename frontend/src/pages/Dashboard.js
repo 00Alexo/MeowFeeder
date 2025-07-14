@@ -33,7 +33,11 @@ const Dashboard = () => {
             if (!user?.username) return;
 
             try {
-                const response = await fetch(`${process.env.REACT_APP_API}/api/device/getUserDevicesWithDetails/${user.username}`);
+                const response = await fetch(`${process.env.REACT_APP_API}/api/device/getUserDevicesWithDetails/${user.username}`, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                });
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -124,7 +128,10 @@ const Dashboard = () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_API}/api/device/modifyFeedingTime`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user.token}`
+                },
                 body: JSON.stringify({ 
                     deviceId: selectedDevice._id, 
                     feedingTime: feedingTimes 
@@ -143,7 +150,11 @@ const Dashboard = () => {
             const fetchDevices = async () => {
                 if (!user?.username) return;
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_API}/api/device/getUserDevicesWithDetails/${user.username}`);
+                    const response = await fetch(`${process.env.REACT_APP_API}/api/device/getUserDevicesWithDetails/${user.username}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    });
                     const data = await response.json();
                     if (response.ok) {
                         setDevices(data.devices || []);
@@ -201,7 +212,10 @@ const Dashboard = () => {
             try {
                 await fetch(`${process.env.REACT_APP_API}/api/device/addFeedingToHistory`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`
+                    },
                     body: JSON.stringify({ deviceId })
                 });
                 console.log('Feeding recorded in backend for device:', deviceId);

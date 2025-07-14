@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "scheme": "MeowFeeder",
+    "name": "MeowFeeder",
+    "slug": "MeowFeeder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo-light.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo-light.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo-light.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/logo-light.png"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
