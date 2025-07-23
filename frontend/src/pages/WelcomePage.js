@@ -241,7 +241,7 @@ const WelcomePage = () => {
       {/* Fixed action button */}
         <div className="fixed bottom-10 right-10 z-[9999]">
             <Link 
-                to="/signup" 
+                to="/sign-up" 
                 className="bg-meow-pink text-white px-8 py-4 rounded-xl text-lg font-medium hover:bg-meow-pink-hover transition-all shadow-lg flex items-center group"
             >
                 Get Started

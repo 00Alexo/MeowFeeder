@@ -18,41 +18,42 @@ const signup = async(req, res) =>{
         const {email, password, confirmPassword} = req.body;
         const saltRounds = 12; let errorFields = [];
 
-        if (!email) errorFields.push({field: "email", error: "Acest camp este obligatoriu!"});
-        if (!password) errorFields.push({field: "pass", error: "Acest camp este obligatoriu!"});
-        if (!confirmPassword) errorFields.push({field: "cpass", error: "Acest camp este obligatoriu!"});
+        if (!email) errorFields.push({field: "email", error: "This field is required!"});
+        if (!password) errorFields.push({field: "pass", error: "This field is required!"});
+        if (!confirmPassword) errorFields.push({field: "cpass", error: "This field is required!"});
 
         if (errorFields.length > 0) 
-            return res.status(400).json({error: 'Toate campurile sunt obligatorii!', errorFields: errorFields});
+            return res.status(400).json({error: 'All fields are required!', errorFields: errorFields});
 
         if(!email.includes('@') && !email.includes('+') && !email.includes('%')){
-            errorFields.push({field: "email", error: "Emailul invalid!"});
-            return res.status(400).json({error:"Email invalid!", errorFields: errorFields});
+            errorFields.push({field: "email", error: "Invalid email!"});
+            return res.status(400).json({error:"Invalid email!", errorFields: errorFields});
         }
 
         const existingEmail = await userModel.findOne({email})
         if(existingEmail){
-            errorFields.push({field: "email", error: "Emailul este deja folosit!"});
-            return res.status(400).json({error:'Emailul este deja folosit!', errorFields: errorFields})
+            errorFields.push({field: "email", error: "Email is already in use!"});
+            return res.status(400).json({error:'Email is already in use!', errorFields: errorFields})
         }
 
         if(!schema.validate(password)){
-            errorFields.push({field: "pass", error: "Parola nu are minim 8 caractere, o litera mare si o cifra!"});
+            errorFields.push({field: "pass", error: "Password must be at least 8 characters long, contain an uppercase letter and a number!"});
             errorFields.push({field: "cpass", error: ""});
-            return res.status(400).json({error: 'Parola nu are minim 8 caractere, o litera mare si o cifra!', errorFields: errorFields})
+            return res.status(400).json({error: 'Password must be at least 8 characters long, contain an uppercase letter and a number!', errorFields: errorFields})
         }
 
         if(password !== confirmPassword){
-            errorFields.push({field: "pass", error: "Parolele nu sunt identice!"});
+            errorFields.push({field: "pass", error: "Passwords do not match!"});
             errorFields.push({field: "cpass", error: ""});
-            return res.status(400).json({error:"Parolele nu sunt identice", errorFields: errorFields});
+            return res.status(400).json({error:"Passwords do not match!", errorFields: errorFields});
         }
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         const data = {
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            devices: ['6866adc4845d2990e46152df'] // for testing purposes (demo)
         }
 
         const user = await userModel.create(data);
@@ -70,10 +71,10 @@ const signin = async(req, res)=>{
         const {email, password} = req.body;
         let errorFields = [];
 
-        if (!email) errorFields.push({field: "email", error: "Acest camp este obligatoriu!"});
-        if (!password) errorFields.push({field: "pass", error: "Acest camp este obligatoriu!"});
+        if (!email) errorFields.push({field: "email", error: "This field is required!"});
+        if (!password) errorFields.push({field: "pass", error: "This field is required!"});
         if (errorFields.length > 0) {
-            return res.status(400).json({error: 'Toate campurile sunt obligatorii!', errorFields: errorFields});
+            return res.status(400).json({error: 'All fields are required!', errorFields: errorFields});
         }
 
         user = await userModel.findOne({email});
@@ -87,12 +88,12 @@ const signin = async(req, res)=>{
                 res.status(200).json({username:user.email, token});
             }
             else{
-                errorFields.push({field: "pass", error: "Parola incorecta!"});
-                return res.status(400).json({error: 'Parola incorecta!', errorFields});
+                errorFields.push({field: "pass", error: "Incorrect password!"});
+                return res.status(400).json({error: 'Incorrect password!', errorFields});
             }
         }
         else
-            return res.status(400).json({error: 'Contul nu exista!', errorFields: [{field:"email", error:"Acest cont nu exista!"}]} );
+            return res.status(400).json({error: 'Account does not exist!', errorFields: [{field:"email", error:"This account does not exist!"}]} );
     }catch(error){
         console.error(error.message);
         return res.status(400).json(error.message);

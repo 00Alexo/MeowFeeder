@@ -114,8 +114,10 @@ const SignUp = () => {
                             </div>
 
                             <div className="mx-auto flex flex-row justify-center gap-8 sm:gap-16">
-                                <img className="w-12 h-12 sm:w-16 sm:h-16 cursor-pointer hover:scale-105 transition-transform duration-200" src={Google}></img>
-                                <img className="w-12 h-12 sm:w-16 sm:h-16 cursor-pointer hover:scale-105 transition-transform duration-200" src={Apple}></img>
+                                <img onClick={() => alert("Google Sign-In is not implemented yet!")}
+                                    className="w-12 h-12 sm:w-16 sm:h-16 cursor-pointer hover:scale-105 transition-transform duration-200" src={Google}></img>
+                                <img onClick={() => alert("Apple Sign-In is not implemented yet!")}
+                                    className="w-12 h-12 sm:w-16 sm:h-16 cursor-pointer hover:scale-105 transition-transform duration-200" src={Apple}></img>
                             </div>
                         </form>
                     </div>
