@@ -212,7 +212,7 @@ const WelcomePage = () => {
 
       <Parallax 
         ref={parallaxRef} 
-        pages={4} 
+        pages={3.3} 
         config={{ tension: 170, friction: 26 }}
       >
         <Background 
