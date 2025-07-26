@@ -65,7 +65,7 @@ const MobileAppPage = () => {
           <h3 className="text-2xl font-bold text-text-primary mb-6">Download Now</h3>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">            
             <a 
-              href="https://expo.dev/artifacts/eas/rxdXRmsTqT9ha8VpqJpq5s.apk" 
+              href="https://expo.dev/artifacts/eas/76cUd9rbhjwWo4kqRcX7Mf.apk" 
               className="inline-flex items-center bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition-colors"
             >
               <svg className="w-8 h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">

@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect } from 'react';
-import { Parallax } from '@react-spring/parallax';
+import { Parallax, ParallaxLayer } from '@react-spring/parallax';
+import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
 import Features from '../components/Features';
@@ -12,6 +13,7 @@ const WelcomePage = () => {
   const navigate = useNavigate();
   const parallaxRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Check if mobile on mount and window resize
   useEffect(() => {
@@ -25,6 +27,20 @@ const WelcomePage = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Track current page for navigation indicators
+  useEffect(() => {
+    const handleScroll = () => {
+      if (parallaxRef.current && parallaxRef.current.current !== undefined) {
+        setCurrentPage(Math.round(parallaxRef.current.current));
+      }
+    };
+
+    // Set up interval to check scroll position
+    const interval = setInterval(handleScroll, 100);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   // MeowFeeder color palette from tailwind config
   const colors = {
     primary: "#F4B6C2",      // meow-pink
@@ -35,7 +51,8 @@ const WelcomePage = () => {
     textPrimary: "#374151",  // text-primary
     textSecondary: "#4B5563", // text-secondary
     bgPage: "#F8F9FA",       // bg-page
-    bgCard: "#FFFFFF"        // bg-card
+    bgCard: "#FFFFFF",       // bg-card
+    lightBg: "#f5f7ff"
   }; 
 
   // Pre-compute random values for consistent rendering
@@ -140,11 +157,6 @@ const WelcomePage = () => {
 
   return (
     <div className="relative h-screen overflow-hidden">
-      <style jsx global>{`
-        html, body {
-          overflow: hidden;
-        }
-      `}</style>
       <style jsx>{`
         /* Hide scrollbar */
         :global(body::-webkit-scrollbar) {
@@ -201,7 +213,7 @@ const WelcomePage = () => {
 
       <Parallax 
         ref={parallaxRef} 
-        pages={window.innerWidth < 768 ? 2 : 3} 
+        pages={3} 
         config={{ tension: 170, friction: 26 }}
       >
         {/* Background Elements */}
@@ -232,24 +244,36 @@ const WelcomePage = () => {
           iconVariants={iconVariants}
         />
 
-        {/* Navigation */}
-        <Navigation 
-          parallaxRef={parallaxRef}
-        />
+        {/* Navigation indicators - using the working pattern from HomePage */}
+        <ParallaxLayer 
+          sticky={{ start: 0, end: 3 }}
+          style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingRight: '2rem', zIndex: 1 }}
+        >
+          <div className="hidden md:flex flex-col gap-4">
+            {[0, 1, 2].map((page) => (
+              <motion.div
+                key={page}
+                className={`h-4 w-4 rounded-full cursor-pointer ${currentPage === page ? 'bg-meow-pink' : 'bg-meow-mint'}`}
+                whileHover={{ scale: 1.5 }}
+                onClick={() => parallaxRef.current?.scrollTo(page)}
+              />
+            ))}
+          </div>
+        </ParallaxLayer>
       </Parallax>
 
-      {/* Fixed action button */}
-        <div className="fixed bottom-10 right-10 z-[9999]">
-            <Link 
-                to="/sign-up" 
-                className="bg-meow-pink text-white px-8 py-4 rounded-xl text-lg font-medium hover:bg-meow-pink-hover transition-all shadow-lg flex items-center group"
-            >
-                Get Started
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </Link>
-        </div>
+      {/* Fixed action button - using the working pattern from HomePage */}
+      <div className="fixed bottom-10 right-10 z-[9999]">
+        <Link 
+          to="/sign-up" 
+          className="bg-meow-pink text-white px-8 py-4 rounded-xl text-lg font-medium hover:bg-meow-pink-hover transition-all shadow-lg flex items-center group"
+        >
+          Get Started
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
+      </div>
     </div>
   );
 };
