@@ -27,18 +27,7 @@ const allowedOrigin = [
 // };
 
 const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin) return callback(null, true); // allow React Native, curl, etc.
-        const allowed = [
-            'http://localhost:3000',
-            allowedOrigin
-        ];
-        if (allowed.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: allowedOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'username'],
     credentials: true
