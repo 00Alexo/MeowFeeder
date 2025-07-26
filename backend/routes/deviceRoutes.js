@@ -17,9 +17,9 @@ const {
 
 const router = express.Router();
 
-const verifyAuth = require('../middleware/verifyAuth');
+//const verifyAuth = require('../middleware/verifyAuth');
 
-router.use(verifyAuth);
+//router.use(verifyAuth); for demo purposes, we are not using auth middleware
 
 router.post('/createDevice', createDevice);
 router.post('/addDeviceToUser', addDeviceToUser);

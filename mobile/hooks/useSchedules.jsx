@@ -22,7 +22,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/getDeviceById/${deviceId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
             })
@@ -60,7 +59,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/schedules/${deviceId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
             })
@@ -88,7 +86,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/schedules/${scheduleId}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ enabled })
@@ -117,7 +114,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/${deviceId}/deleteSchedule`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ scheduleIndex })
@@ -144,7 +140,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/${deviceId}/auto-feeding`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ autoFeeding: enabled })
@@ -170,7 +165,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/${deviceId}/addSchedule`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ time: timeString })
@@ -199,7 +193,6 @@ export const useSchedules = (deviceId) => {
             const response = await fetch(`${API_CONFIG.BASE_URL}/api/device/addFeedingToHistory`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${user.token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ deviceId })

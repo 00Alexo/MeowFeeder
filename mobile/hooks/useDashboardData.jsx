@@ -68,7 +68,6 @@ export const useDashboardData = () => {
 
       const devicesResponse = await fetchWithRetry(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_DEVICES}/${userEmail}`, {
         headers: {
-          'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json',
         }
       })
@@ -88,7 +87,6 @@ export const useDashboardData = () => {
         try {
           const historyResponse = await fetchWithRetry(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FEEDING_HISTORY}/${device._id}`, {
             headers: {
-              'Authorization': `Bearer ${user.token}`,
               'Content-Type': 'application/json',
             }
           })

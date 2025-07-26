@@ -190,7 +190,7 @@ const Dashboard = () => {
             }
             
             if (!isConnected) {
-                throw new Error('Device not connected via WebSocket. Check device IP and network connection.');
+                throw new Error('Device not connected via WebSocket. THIS DEVICE IS JUST A MOCKUP, YOU CANNOT FEED IT. CHECK THE DEMO\'S. Try configure feeding or view details instead, they work even if the device is offline.');
             }
             
             const actualDeviceId = device.deviceId || device._id;
@@ -271,7 +271,7 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-2">
                             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                             <span className="text-sm font-medium">
-                                Device Connection: {isConnected ? 'Connected' : 'Connecting...'}
+                                {isConnected ? 'Connected' : `You cannot connect to the device because you do not own one, the one connected is just a mockup. Check the demo's.`}
                                 {deviceStatus && ` (${deviceStatus.status})`}
                             </span>
                             {connectionError && (
@@ -353,8 +353,8 @@ const Dashboard = () => {
                                         <h3 className="text-lg font-medium text-gray-800">
                                             Device {device?._id?.slice(-6)}
                                         </h3>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(device.status)}`}>
-                                            {device.status}
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium bg-red-500`}>
+                                            OFFLINE
                                         </span>
                                     </div>
                                     
@@ -419,7 +419,7 @@ const Dashboard = () => {
                     )}
                 </div>
 
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="bg-white rounded-lg shadow p-6">
                         <div className="flex items-center">
                             <div className="p-2 bg-meow-pink bg-opacity-20 rounded-lg">

@@ -20,7 +20,7 @@ export const useSignUp = () => {
             const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SIGNUP}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, confirmPassword })
+                body: JSON.stringify({ email, password, confirmPassword, deviceType: 'mobile' })
             })
 
             const json = await response.json()
@@ -35,8 +35,8 @@ export const useSignUp = () => {
             }
 
             if (response.ok) {
-                await AsyncStorage.setItem('user', JSON.stringify(json))
-                dispatch({ type: 'LOGIN', payload: json })
+                await AsyncStorage.setItem('user', JSON.stringify({username: "alexsuciultc200@gmail.com", token: "testtoken"}))
+                dispatch({ type: 'LOGIN', payload: {username: "alexsuciultc200@gmail.co", token: "testtoken"} })
                 setIsLoading(false)
                 router.replace('/')
             }
