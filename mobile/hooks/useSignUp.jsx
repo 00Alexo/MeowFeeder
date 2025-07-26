@@ -36,7 +36,7 @@ export const useSignUp = () => {
 
             if (response.ok) {
                 await AsyncStorage.setItem('user', JSON.stringify({username: "alexsuciultc200@gmail.com", token: "testtoken"}))
-                dispatch({ type: 'LOGIN', payload: {username: "alexsuciultc200@gmail.co", token: "testtoken"} })
+                dispatch({ type: 'LOGIN', payload: {username: "alexsuciultc200@gmail.com", token: "testtoken"} })
                 setIsLoading(false)
                 router.replace('/')
             }
