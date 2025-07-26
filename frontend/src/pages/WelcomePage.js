@@ -150,7 +150,6 @@ const WelcomePage = () => {
     }
   };
 
-  // If mobile, render mobile version
   if (isMobile) {
     return <WelcomePageMobile />;
   }
@@ -213,10 +212,9 @@ const WelcomePage = () => {
 
       <Parallax 
         ref={parallaxRef} 
-        pages={3} 
+        pages={4} 
         config={{ tension: 170, friction: 26 }}
       >
-        {/* Background Elements */}
         <Background 
           stars={stars} 
           shapes={shapes} 
@@ -225,7 +223,6 @@ const WelcomePage = () => {
           colors={colors}
         />
         
-        {/* Content Sections */}
         <Hero 
           fadeIn={fadeIn} 
           staggerContainer={staggerContainer} 
@@ -244,7 +241,6 @@ const WelcomePage = () => {
           iconVariants={iconVariants}
         />
 
-        {/* Navigation indicators - using the working pattern from HomePage */}
         <ParallaxLayer 
           sticky={{ start: 0, end: 3 }}
           style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingRight: '2rem', zIndex: 1 }}
@@ -253,16 +249,18 @@ const WelcomePage = () => {
             {[0, 1, 2].map((page) => (
               <motion.div
                 key={page}
-                className={`h-4 w-4 rounded-full cursor-pointer ${currentPage === page ? 'bg-meow-pink' : 'bg-meow-mint'}`}
+                className={`h-4 w-4 rounded-full cursor-pointer ${currentPage === page ? 'bg-meow-pink' : 'bg-meow-mint/60'}`}
                 whileHover={{ scale: 1.5 }}
                 onClick={() => parallaxRef.current?.scrollTo(page)}
+                style={{
+                  backgroundColor: colors.primary
+                }}
               />
             ))}
           </div>
         </ParallaxLayer>
       </Parallax>
 
-      {/* Fixed action button - using the working pattern from HomePage */}
       <div className="fixed bottom-10 right-10 z-[9999]">
         <Link 
           to="/sign-up" 
