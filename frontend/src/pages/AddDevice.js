@@ -30,6 +30,7 @@ const AddDevice = () => {
             const data = await response.json();
 
             if (!response.ok) {
+                console.log(data.error);
                 throw new Error(data.error || 'Failed to add device');
             }
 
@@ -37,6 +38,7 @@ const AddDevice = () => {
             setDeviceId('');
         } catch (error) {
             setError(error.message);
+            console.log(error.message);
         } finally {
             setIsLoading(false);
         }
@@ -75,7 +77,6 @@ const AddDevice = () => {
                     </form>
                 </div>
 
-                {/* Messages */}
                 {message && (
                     <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
                         {message}
@@ -87,7 +88,6 @@ const AddDevice = () => {
                     </div>
                 )}
 
-                {/* Instructions */}
                 <div className="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg">
                     <h3 className="font-semibold mb-2">Instructions:</h3>
                     <ul className="list-disc list-inside space-y-1">

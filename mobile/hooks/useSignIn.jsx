@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Alert } from 'react-native'
 import { useRouter } from "expo-router"
 import { useUserContext } from "./useUserContext"
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -23,6 +24,7 @@ export const useSignIn = () => {
                 body: JSON.stringify({ email, password, deviceType: 'mobile' })
             })
 
+            Alert.alert(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SIGNIN}`)
             const json = await response.json()
 
             if (!response.ok) {
@@ -41,8 +43,8 @@ export const useSignIn = () => {
                 router.replace('/')
             }
         } catch (error) {
-            console.error('Network error:', error)
-            setError('Network error. Please check your connection.')
+            console.error('Network error:', error.message)
+            setError(error.message)
             setIsLoading(false)
         }
     }

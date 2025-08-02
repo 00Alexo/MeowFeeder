@@ -13,6 +13,11 @@ const addDeviceToUser = async (req, res) => {
             return res.status(404).json({ error: 'User not found.' });
         }
 
+        const mongoose = require('mongoose');
+        if (!mongoose.Types.ObjectId.isValid(deviceId)) {
+            return res.status(400).json({ error: 'Invalid device ID format.' });
+        }
+
         const device = await deviceModel.findById(deviceId);
 
         if (!device) {
@@ -32,8 +37,8 @@ const addDeviceToUser = async (req, res) => {
         return res.status(200).json({ message: 'Device added to user successfully.', device: updatedDevice });
     }  
     catch (error) {
-        console.error("Error creating device:", error);
-        return res.status(500).json({ error});
+        console.error("Error adding device to user:", error);
+        return res.status(500).json({ error: 'Internal server error occurred while adding device.' });
     }
 }
 
