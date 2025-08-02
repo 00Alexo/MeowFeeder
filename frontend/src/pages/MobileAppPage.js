@@ -17,6 +17,24 @@ const MobileAppPage = () => {
           <p className="text-text-secondary text-lg">Control your pet's feeding schedule on the go</p>
         </div>
 
+        {/* App Not Available Warning */}
+        <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6 mb-8 text-center">
+          <div className="flex justify-center mb-4">
+            <svg className="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-red-700 mb-3">App Currently Unavailable</h2>
+          <p className="text-red-600 text-lg mb-4">
+            The MeowFeeder mobile application is currently not working and is unavailable for use.
+          </p>
+          <div className="bg-red-100 rounded-lg p-4 mb-4">
+            <p className="text-red-700 font-medium">
+              ⚠️ App is availabale for download, but not functional at the moment.
+            </p>
+          </div>
+        </div>
+
         {/* App Preview */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
           <div className="grid md:grid-cols-2 gap-8 items-center">
