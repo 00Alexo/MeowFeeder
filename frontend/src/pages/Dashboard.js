@@ -190,7 +190,7 @@ const Dashboard = () => {
             }
             
             if (!isConnected) {
-                throw new Error('Device not connected via WebSocket. THIS DEVICE IS JUST A MOCKUP, YOU CANNOT FEED IT. CHECK THE DEMO\'S. Try configure feeding or view details instead, they work even if the device is offline.');
+                throw new Error('Device not connected via WebSocket. DEVICES ARE NOT AVAILABLE TO THE PUBLIC, YOU CANNOT FEED IT as you do not own one. CHECK THE DEVLOGS\'S. Try configure feeding or view details instead, they work even if the device is offline.');
             }
             
             const actualDeviceId = device.deviceId || device._id;
@@ -271,7 +271,7 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-2">
                             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                             <span className="text-sm font-medium">
-                                {isConnected ? 'Connected' : `You cannot connect to the device because you do not own one, the one connected is just a mockup. Check the demo's.`}
+                                {isConnected ? 'Connected' : `You cannot connect to the device because you do not own one as they are not available to the public. Check the devlogs's.`}
                                 {deviceStatus && ` (${deviceStatus.status})`}
                             </span>
                             {connectionError && (
