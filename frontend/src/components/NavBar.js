@@ -100,13 +100,6 @@ const NavBar = () => {
                                             <div className="px-4 py-2 text-xs text-text-muted border-b border-border-light">
                                                 Signed in as <strong>{user.username}</strong>
                                             </div>
-                                            <Link
-                                                to="/settings"
-                                                className="block w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-gray-50 transition-colors duration-200"
-                                                onClick={() => setShowDropdown(false)}
-                                            >
-                                                Settings
-                                            </Link>
                                             <button
                                                 onClick={handleLogout}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"
@@ -186,13 +179,6 @@ const NavBar = () => {
                                     onClick={closeMobileMenu}
                                 >
                                     Add Device
-                                </Link>
-                                <Link
-                                    to="/settings"
-                                    className="block px-4 py-2 text-sm font-medium rounded-lg text-text-primary hover:bg-gray-50 transition-all duration-200"
-                                    onClick={closeMobileMenu}
-                                >
-                                    Settings
                                 </Link>
                                 <div className="border-t border-border-light pt-3">
                                     <div className="px-4 py-2 text-xs text-text-muted">

@@ -34,11 +34,6 @@ function App() {
                 <AddDevice/>
               </ProtectedRoute>
             }/>
-            <Route path = "/settings" element={
-              <ProtectedRoute>
-                <Settings/>
-              </ProtectedRoute>
-            }/>
             <Route path = "/mobile-app" element={<MobileAppPage/>}/>
             <Route path = "/Welcome" element={<WelcomePage/>}/>
             <Route path = "/color-palette" element={<ColorPalette/>}/>
